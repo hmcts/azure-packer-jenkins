@@ -1,0 +1,92 @@
+{
+  "variables": 
+  {
+    "azure_client_id": "{{ env `AZURE_CLIENT_ID` }}",
+    "azure_client_secret": "{{ env `AZURE_CLIENT_SECRET` }}",
+    "azure_subscription_id": "",
+    "azure_resource_group_name": "",
+    "azure_storage_account_name": "",
+    "azure_tenant_id": "{{ env `AZURE_TENANT_ID` }}",
+    "jenkins_user_password": "{{ env `JENKINS_USER_PASSWORD` }}",
+    "virtual_network_name": "",
+    "virtual_network_subnet_name": "",
+    "virtual_network_resource_group_name": ""
+  },
+  "builders":
+  [
+    {
+      "type": "azure-arm",
+      "client_id": "{{ user `azure_client_id` }}",
+      "client_secret": "{{ user `azure_client_secret` }}",
+      "resource_group_name": "{{user `azure_resource_group_name`}}",
+      "storage_account": "{{user `azure_storage_account_name`}}",
+      "subscription_id": "{{ user `azure_subscription_id`}}",
+      "tenant_id": "{{ user `azure_tenant_id`}}",
+      "capture_container_name": "autobuilds",
+      "capture_name_prefix": "packer",
+      "virtual_network_name": "{{ user `virtual_network_name` }}",
+      "virtual_network_subnet_name": "{{ user `virtual_network_subnet_name` }}",
+      "virtual_network_resource_group_name": "{{ user `virtual_network_resource_group_name` }}",
+      "os_type": "Linux",
+      "image_publisher": "OpenLogic",
+      "image_offer": "CentOS",
+      "image_sku": "7.4",
+      "azure_tags": {
+        "owner": "devops"
+      },
+      "location": "UK South",
+      "vm_size": "Standard_DS2_v2",
+      "os_disk_size_gb": "30"
+    }
+  ],
+  "provisioners":
+  [
+    {
+      "type": "ansible",
+      "playbook_file": "bootstrap-role/run_bootstrap_dynjenkins.yml",
+      "extra_arguments": [
+        "--extra-vars=@ansible-management/group_vars/all.yml",
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "jenkins-common-role/playbook.yml",
+      "extra_arguments": [
+        "--extra-vars=@ansible-management/group_vars/all.yml",
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
+        "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
+        "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
+        "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+		"echo '{{ user `override_ansible_jenkins_run_user` }}:{{ user `jenkins_user_password` }}'  | sudo chpasswd",
+		"(sudo cat /etc/ssh/sshd_config && echo -e 'Match User {{ user `override_ansible_jenkins_run_user` }} Address 10.*\n\tPasswordAuthentication yes\n') >> /tmp/sshd_config",
+          	 "sudo sed -i -e 's/^PasswordAuthentication no/PasswordAuthentication yes/'  /tmp/sshd_config",
+           	"sudo sed -i -e 's/^ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/' /tmp/sshd_config",
+                "sudo cp /tmp/sshd_config /etc/ssh/sshd_config",
+                "sudo chmod 0600 /etc/ssh/sshd_config",
+           	"sudo sshd -t"
+	]
+    },
+    {
+      "type": "shell",
+      "inline": ["echo 'Bootstrap finished, running update.'",
+		"sudo yum update -y",
+		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
+		"cp /etc/resolv.conf /tmp/resolv.conf",
+		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
+	]
+
+    }
+  ]
+}
