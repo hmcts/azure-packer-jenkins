@@ -31,7 +31,7 @@ node {
             git url: "git@git.reform.hmcts.net:devops/jenkins-common-role.git", branch: "master"
           }
           dir('ansible-management') {
-            git url: "git@git.reform.hmcts.net:devops/ansible-management.git", branch: "master"
+            git url: "git@git.reform.hmcts.net:devops/ansible-management.git", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
         }
 
