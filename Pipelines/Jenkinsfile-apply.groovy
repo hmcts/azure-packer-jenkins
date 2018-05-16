@@ -25,13 +25,13 @@ node {
         stage('Checkout') {
           checkout scm
           dir('bootstrap-role') {
-            git url: "git@git.reform.hmcts.net:devops/bootstrap-role.git", branch: "master"
+            git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
           }
           dir('jenkins-common-role') {
-            git url: "git@git.reform.hmcts.net:devops/jenkins-common-role.git", branch: "master"
+            git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
           }
           dir('ansible-management') {
-            git url: "git@git.reform.hmcts.net:devops/ansible-management.git", branch: "master"
+            git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
         }
 
