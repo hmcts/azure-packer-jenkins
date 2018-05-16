@@ -33,7 +33,7 @@ node() {
           }
 
           dir('ansible-management') {
-            git url: "https://github.com/hmcts/ansible-management", branch: "master"
+            git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
         }
 
