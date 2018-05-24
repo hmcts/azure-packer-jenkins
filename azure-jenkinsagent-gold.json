@@ -13,7 +13,7 @@
     "virtual_network_resource_group_name": "",
     "http_proxy": "{{ env `http_proxy` }}",
     "https_proxy": "{{ env `https_proxy` }}",
-    "no_proxy": "{{ env `no_proxy` }}",
+    "no_proxy": "{{ env `no_proxy` }}"
   },
   "builders":
   [
