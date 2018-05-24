@@ -39,6 +39,13 @@ node {
           }
         }
 
+	stage('Create symlinks to work around relative-directory-playbook-path bug') {
+		sh '''
+		ln -s roles/bootstrap-role/roles roles
+		ln -s roles/jenkins-common-role/roles roles
+		'''
+	}
+
         stage('Bootstrap Role Installation/Download') {                                                                                                                                   
           sh '''
             ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force --roles-path=roles/
