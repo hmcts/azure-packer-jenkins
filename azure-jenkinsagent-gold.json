@@ -43,7 +43,7 @@
   [
     {
       "type": "ansible",
-      "playbook_file": "bootstrap-role/run_bootstrap_dynjenkins.yml",
+      "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",

@@ -25,10 +25,10 @@ node() {
 
         stage('Checkout') {
           checkout scm
-          dir('bootstrap-role') {
+          dir('roles/bootstrap-role') {
             git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
           }
-          dir('jenkins-common-role') {
+          dir('roles/jenkins-common-role') {
             git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
           }
 
@@ -39,13 +39,13 @@ node() {
 
         stage('Bootstrap Role Installation/Download') {
           sh '''
-            ansible-galaxy install -r bootstrap-role/requirements.yml --force --roles-path=bootstrap-role/roles/ 
+            ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force
           '''
         }
 
         stage('Jenkins Common/Slave Roles Installation/Download') {
           sh '''
-            ansible-galaxy install -r jenkins-common-role/requirements.yml --force --roles-path=bootstrap-role/roles/ 
+            ansible-galaxy install -r roles/jenkins-common-role/requirements.yml --force
           '''
         }
 
