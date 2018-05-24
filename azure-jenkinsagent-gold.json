@@ -11,9 +11,7 @@
     "virtual_network_name": "",
     "virtual_network_subnet_name": "",
     "virtual_network_resource_group_name": "",
-    "http_proxy": "{{ env `http_proxy` }}",
-    "https_proxy": "{{ env `https_proxy` }}",
-    "no_proxy": "{{ env `no_proxy` }}"
+    "http_proxy": "{{ env `http_proxy` }}"
   },
   "builders":
   [
@@ -46,11 +44,6 @@
   [
     {
       "type": "ansible",
-      "ansible_env_vars": [
-          "http_proxy={{ user `http_proxy` }}",
-          "https_proxy={{ user `https_proxy` }}",
-          "no_proxy={{ user `no_proxy` }}"
-      ],
       "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
@@ -63,17 +56,15 @@
     {
       "type": "shell",
       "inline": [
-                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}"
+                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}",
+		"cp /etc/pip.conf /tmp/pip.conf",
+		"echo 'proxy = {{ user `http_proxy` }}' >> /tmp/pip.conf",
+		"sudo mv /tmp/pip.conf /etc/pip.conf"
       ]
     },
     {
       "type": "ansible",
       "playbook_file": "roles/jenkins-common-role/playbook.yml",
-      "ansible_env_vars": [
-          "http_proxy={{ user `http_proxy` }}",
-          "https_proxy={{ user `https_proxy` }}",
-          "no_proxy={{ user `no_proxy` }}"
-      ],
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
