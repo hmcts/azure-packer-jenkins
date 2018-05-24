@@ -41,8 +41,8 @@ node {
 
 	stage('Create symlinks to work around relative-directory-playbook-path bug') {
 		sh '''
-		ln -s roles/bootstrap-role/roles roles
-		ln -s roles/jenkins-common-role/roles roles
+		ln -s `pwd`/roles `pwd`/roles/bootstrap-role/roles
+		ln -s `pwd`/roles `pwd`/roles/jenkins-common-role/roles
 		'''
 	}
 
