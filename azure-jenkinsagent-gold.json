@@ -44,8 +44,8 @@
     {
       "type": "shell",
       "inline": [
-                "ln -s roles/bootstrap-role/roles roles",
-                "ln -s roles/jenkins-common-role/roles roles"
+                "ln -s `pwd`/roles/bootstrap-role/roles `pwd`/roles",
+                "ln -s `pwd`/roles/jenkins-common-role/roles `pwd`/roles"
       ]
     },
     {
