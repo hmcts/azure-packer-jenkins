@@ -58,7 +58,7 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "jenkins-common-role/playbook.yml",
+      "playbook_file": "roles/jenkins-common-role/playbook.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
