@@ -42,6 +42,13 @@
   "provisioners":
   [
     {
+      "type": "shell",
+      "inline": [
+                "ln -s roles/bootstrap-role/roles roles",
+                "ln -s roles/jenkins-common-role/roles roles"
+      ]
+    },
+    {
       "type": "ansible",
       "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
       "extra_arguments": [
