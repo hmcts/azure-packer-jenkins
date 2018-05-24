@@ -33,6 +33,10 @@ node {
           dir('ansible-management') {
             git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
+
+          dir('bootstrap-role/roles/cis') {
+            git url: "https://github.com/hmcts/cis-role.git", branch: "master", credentialsId: "jenkins-public-github-api-token"
+          }
         }
 
         stage('Bootstrap Role Installation/Download') {                                                                                                                                   
