@@ -41,13 +41,13 @@ node {
 
         stage('Bootstrap Role Installation/Download') {                                                                                                                                   
           sh '''
-            ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force 
+            ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force --roles-path=roles/
           '''
         }
 
         stage('Jenkins Common/Slave Roles Installation/Download') {
           sh '''
-            ansible-galaxy install -r roles/jenkins-common-role/requirements.yml --force 
+            ansible-galaxy install -r roles/jenkins-common-role/requirements.yml --force --roles-path=roles/
             cp ansible-management/files/*.rpm roles/devops.common/files/
           '''
         }
