@@ -28,7 +28,7 @@ node {
             git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
           }
           dir('roles/jenkins-common-role') {
-            git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
+            git url: "https://github.com/hmcts/jenkins-common-role", branch: "RDO-1967-requirements-coding-in-the-open"
           }
           dir('ansible-management') {
             git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
