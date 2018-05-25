@@ -56,10 +56,7 @@
     {
       "type": "shell",
       "inline": [
-                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}",
-		"cp /etc/pip.conf /tmp/pip.conf",
-		"echo 'proxy = {{ user `http_proxy` }}' >> /tmp/pip.conf",
-		"sudo mv /tmp/pip.conf /etc/pip.conf"
+                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}"
       ]
     },
     {
