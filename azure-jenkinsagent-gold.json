@@ -44,15 +44,6 @@
   [
     {
       "type": "ansible",
-      "playbook_file": "roles/cis-role/playbook.yml",
-      "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml"
-      ]
-    },
-    {
-      "type": "ansible",
       "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
@@ -65,6 +56,15 @@
       "type": "shell",
       "inline": [
                 "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}"
+      ]
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "roles/cis-role/playbook.yml",
+      "extra_arguments": [
+        "--extra-vars=@ansible-management/group_vars/all.yml",
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
+        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml"
       ]
     },
     {
