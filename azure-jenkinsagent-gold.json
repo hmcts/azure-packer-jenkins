@@ -95,7 +95,7 @@
     {
       "type": "shell",
       "inline": ["echo 'Bootstrap finished, running update.'",
-		"sudo yum update -y",
+		"sudo yum update -y -q",
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
