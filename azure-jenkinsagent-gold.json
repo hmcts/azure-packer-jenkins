@@ -11,7 +11,9 @@
     "virtual_network_name": "",
     "virtual_network_subnet_name": "",
     "virtual_network_resource_group_name": "",
-    "http_proxy": "{{ env `http_proxy` }}"
+    "http_proxy": "{{ env `http_proxy` }}",
+    "temp_host_name": "azure-packer-buildagent-temp"
+
   },
   "builders":
   [
@@ -38,7 +40,7 @@
       "location": "UK South",
       "vm_size": "Standard_DS2_v2",
       "os_disk_size_gb": "30",
-      "temp_compute_name": "azure-packer-buildagent-temp"
+      "temp_compute_name": "{{ user `temp_host_name` }}"
     }
   ],
   "provisioners":
@@ -51,7 +53,8 @@
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars=@roles/bootstrap-role/defaults/main.yml",
         "--extra-vars=passwordless_sudo_type=dynamic"
-      ]
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "shell",
@@ -61,7 +64,8 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "playbook-debug.yml"
+      "playbook_file": "playbook-debug.yml",
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "ansible",
@@ -74,7 +78,8 @@
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
         "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "passwordless_sudo_type=dynamic"
-      ]
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "ansible",
@@ -83,7 +88,8 @@
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars=@roles/jenkins-common-role/defaults/main.yml"
-      ]
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "shell",
