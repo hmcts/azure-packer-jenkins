@@ -37,7 +37,8 @@
       },
       "location": "UK South",
       "vm_size": "Standard_DS2_v2",
-      "os_disk_size_gb": "30"
+      "os_disk_size_gb": "30",
+      "temp_compute_name": "azure-packer-buildagent-temp"
     }
   ],
   "provisioners":
