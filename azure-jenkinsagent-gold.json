@@ -117,7 +117,9 @@
     },
     {
       "type": "shell",
-      "inline": ["echo 'Bootstrap finished, running update.'",
+      "inline": ["echo 'Bootstrap finished, running update (Centos 7.4 based).'",
+		"sudo yum update -y -q",
+                "echo 'Applying second update to acquire Centos 7.5 characteristics'",
 		"sudo yum update -y -q",
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
