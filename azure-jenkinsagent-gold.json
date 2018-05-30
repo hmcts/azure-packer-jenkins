@@ -61,6 +61,10 @@
     },
     {
       "type": "ansible",
+      "playbook_file": "playbook-debug.yml"
+    },
+    {
+      "type": "ansible",
       "playbook_file": "roles/jenkins-common-role/playbook.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
@@ -79,29 +83,6 @@
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars=@roles/jenkins-common-role/defaults/main.yml"
-      ]
-    },
-    {
-      "type": "ansible",
-      "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
-      "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/bootstrap-role/defaults/main.yml",
-        "--extra-vars=passwordless_sudo_type=dynamic"
-      ]
-    },
-    {
-      "type": "ansible",
-      "playbook_file": "roles/jenkins-common-role/playbook.yml",
-      "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml",
-        "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
-        "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
-        "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
-        "--extra-vars", "passwordless_sudo_type=dynamic"
       ]
     },
     {
