@@ -107,9 +107,6 @@
       "type": "shell",
       "inline": ["echo 'Bootstrap finished, running update (Centos 7.4 based).'",
 		"sudo yum update -y -q",
-                "echo 'Cleaning cache and applying second update to acquire Centos 7.5 characteristics'",
-                "sudo yum clean all",
-		"sudo yum update -y -q",
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
