@@ -44,6 +44,7 @@ node {
 		ln -s `pwd`/roles `pwd`/roles/bootstrap-role/roles
 		ln -s `pwd`/roles `pwd`/roles/jenkins-common-role/roles
 		ln -s `pwd`/roles `pwd`/roles/cis-role/roles
+		ln -s `pwd`/roles/cis-role `pwd`/roles/cis
 		'''
 	}
 
