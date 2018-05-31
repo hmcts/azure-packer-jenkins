@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: debug var inventory_hostname
+      debug: var=inventory_hostname
+    - name: debug var ansible_hostname
+      debug: var=ansible_hostname
