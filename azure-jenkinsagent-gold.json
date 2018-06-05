@@ -84,7 +84,8 @@
         "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
         "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
-        "--extra-vars", "passwordless_sudo_type=dynamic"
+        "--extra-vars", "passwordless_sudo_type=dynamic",
+        "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
       ],
       "ansible_env_vars": [
          "http_proxy={{ user `http_proxy` }}",
