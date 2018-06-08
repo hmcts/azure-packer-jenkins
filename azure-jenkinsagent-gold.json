@@ -35,7 +35,7 @@
       "os_type": "Linux",
       "image_publisher": "OpenLogic",
       "image_offer": "CentOS",
-      "image_sku": "7.4",
+      "image_sku": "7.5",
       "azure_tags": {
         "owner": "devops"
       },
@@ -123,7 +123,7 @@
     },
     {
       "type": "shell",
-      "inline": ["echo 'Bootstrap finished, running update (Centos 7.4 based).'",
+      "inline": ["echo 'Bootstrap finished, running update'",
 		"sudo yum update -y -q",
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
