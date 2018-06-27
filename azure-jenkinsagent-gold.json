@@ -139,9 +139,11 @@
     },
     {
       "type": "shell",
+      "inline": [
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
+      ]
     }
   ]
 }
