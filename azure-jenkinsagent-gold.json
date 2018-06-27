@@ -130,6 +130,15 @@
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
 	]
 
+    },
+    {
+      "type": "file",
+      "source": "tests",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/serverspec.sh"
     }
   ]
 }
