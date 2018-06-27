@@ -66,7 +66,7 @@
     {
       "type": "shell",
       "inline": [
-                "sudo -- /usr/sbin/adduser --firstuid 501 --shell /usr/bin/bash {{ user `override_ansible_jenkins_run_user` }}"
+                "sudo -- /usr/sbin/adduser -K UID_MIN=501 -K SYS_UID_MIN=501 --shell /usr/bin/bash {{ user `override_ansible_jenkins_run_user` }}"
       ]
     },
     {
