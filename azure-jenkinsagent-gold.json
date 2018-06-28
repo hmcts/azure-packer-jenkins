@@ -135,7 +135,7 @@
     },
     {
       "type": "shell",
-      "script": "scripts/serverspec.sh"
+      "script": "echo scripts/serverspec.sh"
     },
     {
       "type": "shell",
