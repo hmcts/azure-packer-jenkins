@@ -135,7 +135,7 @@
     },
     {
       "type": "shell",
-      "unline": [ "echo scripts/serverspec.sh" ]
+      "inline": [ "echo scripts/serverspec.sh" ]
     },
     {
       "type": "shell",
