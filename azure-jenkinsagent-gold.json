@@ -134,13 +134,8 @@
       "destination": "/tmp"
     },
     {
-      "type": "file",
-      "source": "scripts",
-      "destination": "/tmp"
-    },
-    {
       "type": "shell",
-      "inline": [ "sudo /tmp/serverspec.sh" ]
+      "script": "scripts/serverspec.sh"
     },
     {
       "type": "shell",
