@@ -135,7 +135,7 @@
     },
     {
       "type": "shell",
-      "script": "scripts/serverspec.sh"
+      "inline": [ "sudo scripts/serverspec.sh" ]
     },
     {
       "type": "shell",
