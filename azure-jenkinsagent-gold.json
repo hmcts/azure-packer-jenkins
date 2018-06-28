@@ -140,7 +140,7 @@
     },
     {
       "type": "shell",
-      "inline": [ "sudo /tmp/scripts/serverspec.sh" ]
+      "inline": [ "sudo /tmp/serverspec.sh" ]
     },
     {
       "type": "shell",
