@@ -135,7 +135,7 @@
     },
     {
       "type": "shell",
-      "inline": [ "sudo scripts/serverspec.sh" ]
+      "inline": [ "cd /tmp/tests && sudo scripts/serverspec.sh" ]
     },
     {
       "type": "shell",
