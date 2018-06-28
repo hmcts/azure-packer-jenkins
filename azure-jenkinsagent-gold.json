@@ -134,8 +134,13 @@
       "destination": "/tmp"
     },
     {
+      "type": "file",
+      "source": "scripts",
+      "destination": "/tmp"
+    },
+    {
       "type": "shell",
-      "inline": [ "cd /tmp/tests && sudo scripts/serverspec.sh" ]
+      "inline": [ "sudo /tmp/scripts/serverspec.sh" ]
     },
     {
       "type": "shell",
