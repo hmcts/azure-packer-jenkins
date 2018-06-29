@@ -6,3 +6,7 @@
       debug: var=inventory_hostname
     - name: debug var ansible_hostname
       debug: var=ansible_hostname
+    - name: debug var jenkins_common_role_username
+      debug: var=jenkins_common_role_username
+    - name: debug var jenkins_common_role_override_username
+      debug: var=jenkins_common_role_override_username
