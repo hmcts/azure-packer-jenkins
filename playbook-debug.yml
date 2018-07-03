@@ -10,3 +10,7 @@
       debug: var=jenkins_common_role_username
     - name: debug var jenkins_common_role_override_username
       debug: var=jenkins_common_role_override_username
+    - name: debug var jenkins_yum_packages_regular
+      debug: var=jenkins_yum_packages_regular
+    - name: debug var jenkins_yum_packages_system
+      debug: var=jenkins_yum_packages_system
