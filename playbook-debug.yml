@@ -14,6 +14,7 @@
       debug: var=jenkins_yum_packages_regular
     - name: debug var jenkins_yum_packages_system
       debug: var=jenkins_yum_packages_system
+
     - name: Get list of yum repositories
       shell: ls -lh /etc/yum.repos.d/*
       register: debug1
@@ -21,17 +22,35 @@
     - name: Show list of yum repositories
       debug: var=debug1
       failed_when: false
-    - name: Get yum yarn depository information
-      shell: cat /etc/yum.repos.d/yarn.repo
+
+    - name: Get list of gpg keys used by rpm (before yum install)
+      shell: ls -lh /etc/pki/rpm-gpg/*
       register: debug2
       failed_when: false
-    - name: Show yum yarn depository information
+    - name: Show list of gpg keys
       debug: var=debug2
       failed_when: false
-    - name: Attempt to install yarn manually for debugging
-      shell: yum -y --enablerepo=='*' install yarn
+
+    - name: Get yum yarn depository information
+      shell: cat /etc/yum.repos.d/yarn.repo
       register: debug3
       failed_when: false
-    - name: Show what happened with the attempt to install yarn via yum
+    - name: Show yum yarn depository information
       debug: var=debug3
+      failed_when: false
+
+    - name: Attempt to install yarn manually for debugging
+      shell: yum -y --enablerepo=='*' install yarn maven jq owasp-zap
+      register: debug4
+      failed_when: false
+    - name: Show what happened with the attempt to install packages via yum
+      debug: var=debug4
+      failed_when: false
+
+    - name: Get list of gpg keys used by rpm (after yum install)
+      shell: ls -lh /etc/pki/rpm-gpg/*
+      register: debug5
+      failed_when: false
+    - name: Show list of gpg keys
+      debug: var=debug5
       failed_when: false
