@@ -29,9 +29,9 @@
       debug: var=debug2
       failed_when: false
     - name: Attempt to install yarn manually for debugging
-      shell: yum -y --enablerepo=='*' install yarn
+      shell: yum -y --enablerepo=='*' install yarn maven jq
       register: debug3
       failed_when: false
-    - name: Show what happened with the attempt to install yarn via yum
+    - name: Show what happened with the attempt to install packages via yum
       debug: var=debug3
       failed_when: false
