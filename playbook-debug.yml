@@ -14,3 +14,24 @@
       debug: var=jenkins_yum_packages_regular
     - name: debug var jenkins_yum_packages_system
       debug: var=jenkins_yum_packages_system
+    - name: Get list of yum repositories
+      shell: ls -lh /etc/yum.repos.d/*
+      register: debug1
+      failed_when: false
+    - name: Show list of yum repositories
+      debug: var=debug1
+      failed_when: false
+    - name: Get yum yarn depository information
+      shell: cat /etc/yum.repos.d/*yarn*
+      register: debug2
+      failed_when: false
+    - name: Show yum yarn depository information
+      debug: var=debug2
+      failed_when: false
+    - name: Attempt to install yarn manually for debugging
+      shell: yum --enablerepo=='*' install yarn
+      register: debug3
+      failed_when: false
+    - name: Show what happened with the attempt to install yarn via yum
+      debug: var=debug3
+      failed_when: false
