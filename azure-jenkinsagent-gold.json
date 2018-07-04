@@ -1,5 +1,5 @@
 {
-  "variables": 
+  "variables":
   {
     "azure_client_id": "{{ env `AZURE_CLIENT_ID` }}",
     "azure_client_secret": "{{ env `AZURE_CLIENT_SECRET` }}",
@@ -53,7 +53,6 @@
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/bootstrap-role/defaults/main.yml",
         "--extra-vars=passwordless_sudo_type=dynamic",
         "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
       ],
@@ -77,7 +76,6 @@
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml",
         "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
         "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
@@ -91,7 +89,6 @@
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml",
         "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
         "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
@@ -110,8 +107,7 @@
       "playbook_file": "roles/cis-role/playbook.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/jenkins-common-role/defaults/main.yml"
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml"
       ],
       "ansible_env_vars": [
          "http_proxy={{ user `http_proxy` }}",
