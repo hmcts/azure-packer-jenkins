@@ -53,7 +53,6 @@
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars=@roles/bootstrap-role/defaults/main.yml",
         "--extra-vars=passwordless_sudo_type=dynamic",
         "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
       ],
