@@ -40,7 +40,7 @@
       failed_when: false
 
     - name: Attempt to install yarn manually for debugging
-      shell: yum -y --enablerepo=='*' install yarn maven jq
+      shell: yum -y --enablerepo=='*' install yarn maven jq owasp-zap
       register: debug4
       failed_when: false
     - name: Show what happened with the attempt to install packages via yum
