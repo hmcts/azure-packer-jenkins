@@ -24,27 +24,40 @@ node {
 
         stage('Checkout') {
           checkout scm
-          dir('bootstrap-role') {
+          dir('roles/bootstrap-role') {
             git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
           }
-          dir('jenkins-common-role') {
+          dir('roles/jenkins-common-role') {
             git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
           }
           dir('ansible-management') {
             git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
+
+          dir('roles/cis-role') {
+            git url: "https://github.com/hmcts/cis-role.git", branch: "master", credentialsId: "jenkins-public-github-api-token"
+          }
         }
 
-        stage('Bootstrap Role Installation/Download') {                                                                                                                                   
+	stage('Create symlinks to work around relative-directory-playbook-path bug') {
+		sh '''
+		ln -s `pwd`/roles `pwd`/roles/bootstrap-role/roles
+		ln -s `pwd`/roles `pwd`/roles/jenkins-common-role/roles
+		ln -s `pwd`/roles `pwd`/roles/cis-role/roles
+		ln -s `pwd`/roles/cis-role `pwd`/roles/cis
+		'''
+	}
+
+        stage('Bootstrap Role Installation/Download') {
           sh '''
-            ansible-galaxy install -r bootstrap-role/requirements.yml --force --roles-path=bootstrap-role/roles/ 
+            ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force --roles-path=roles/
           '''
         }
 
         stage('Jenkins Common/Slave Roles Installation/Download') {
           sh '''
-            ansible-galaxy install -r jenkins-common-role/requirements.yml --force --roles-path=jenkins-common-role/roles/
-            cp ansible-management/files/*.rpm jenkins-common-role/roles/devops.common/files/
+            ansible-galaxy install -r roles/jenkins-common-role/requirements.yml --force --roles-path=roles/
+            cp ansible-management/files/*.rpm roles/devops.common/files/
           '''
         }
 
@@ -58,7 +71,7 @@ node {
           sh '''
             packer validate -var "azure_client_id=ug" -var "azure_client_secret=ogg" -var "azure_subscription_id=laurel" -var "azure_resource_group_name=adam" -var "azure_storage_account_name=eve" -var "jenkins_user_password=secret" azure-jenkinsagent-gold.json
           '''
-        } 
+        }
 
         withCredentials([
             [$class: 'StringBinding', credentialsId: 'IDAM_ARM_CLIENT_SECRET', variable: 'AZURE_CLIENT_SECRET'],
@@ -66,7 +79,7 @@ node {
             [$class: 'StringBinding', credentialsId: 'IDAM_ARM_TENANT_ID', variable: 'AZURE_TENANT_ID'],
             [$class: 'StringBinding', credentialsId: 'IDAM_ARM_SUBSCRIPTION_ID', variable: 'AZURE_SUBSCRIPTION_ID']
         ]) {
-          
+
           stage('Log in to Azure') {
             sh '''
               az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
@@ -90,7 +103,7 @@ node {
 		az storage account create -n jabsa$(az account show | jq -r .name | tr [:upper:] [:lower:] | sed s#-##g) --resource-group jabrg$Subscription -l uksouth --sku Standard_LRS
             '''
           }
-          
+
           stage('Remove Previous images directory') {
             sh '''
               az storage container delete --account-name jabsa$(az account show | jq -r .name | tr [:upper:] [:lower:] | sed s#-##g) -n images
@@ -112,8 +125,10 @@ node {
           stage('Packer Deploy') {
 	    timestamps {
               wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
-  
+
                 sh '''
+                  pwd
+                  find . -type f
                   packer build -var-file=ansible-management/packer_vars/azure-packer-jenkins.json -var "azure_subscription_id=$(az account show | jq -r .id)" -var "azure_resource_group_name=jabrg$Subscription" -var "azure_storage_account_name=jabsa$(az account show | jq -r .name | tr [:upper:] [:lower:] | sed s#-##g)" -var "jenkins_user_password=$JENKINS_USER_PASSWORD" azure-jenkinsagent-gold.json
                 '''
               }

@@ -1,5 +1,5 @@
 {
-  "variables": 
+  "variables":
   {
     "azure_client_id": "{{ env `AZURE_CLIENT_ID` }}",
     "azure_client_secret": "{{ env `AZURE_CLIENT_SECRET` }}",
@@ -10,7 +10,12 @@
     "jenkins_user_password": "{{ env `JENKINS_USER_PASSWORD` }}",
     "virtual_network_name": "",
     "virtual_network_subnet_name": "",
-    "virtual_network_resource_group_name": ""
+    "virtual_network_resource_group_name": "",
+    "http_proxy": "{{ env `http_proxy` }}",
+    "https_proxy": "{{ env `https_proxy` }}",
+    "no_proxy": "{{ env `no_proxy` }}",
+    "temp_host_name": "azure-packer-buildagent-temp"
+
   },
   "builders":
   [
@@ -30,41 +35,72 @@
       "os_type": "Linux",
       "image_publisher": "OpenLogic",
       "image_offer": "CentOS",
-      "image_sku": "7.4",
+      "image_sku": "7.5",
       "azure_tags": {
         "owner": "devops"
       },
       "location": "UK South",
       "vm_size": "Standard_DS2_v2",
-      "os_disk_size_gb": "30"
+      "os_disk_size_gb": "30",
+      "temp_compute_name": "{{ user `temp_host_name` }}"
     }
   ],
   "provisioners":
   [
     {
       "type": "ansible",
-      "playbook_file": "bootstrap-role/run_bootstrap_dynjenkins.yml",
+      "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml"
-      ]
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
+        "--extra-vars=passwordless_sudo_type=dynamic",
+        "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
+      ],
+      "ansible_env_vars": [
+         "http_proxy={{ user `http_proxy` }}",
+         "https_proxy={{ user `https_proxy` }}",
+         "no_proxy={{ user `no_proxy` }}"
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "shell",
       "inline": [
-                "sudo /usr/sbin/adduser {{ user `override_ansible_jenkins_run_user` }}"
+                "sudo -- /usr/sbin/adduser -K UID_MIN=501 -K SYS_UID_MIN=501 --shell /usr/bin/bash {{ user `override_ansible_jenkins_run_user` }}"
       ]
     },
     {
       "type": "ansible",
-      "playbook_file": "jenkins-common-role/playbook.yml",
+      "playbook_file": "roles/jenkins-common-role/playbook.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
         "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
-        "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}"
-      ]
+        "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
+        "--extra-vars", "passwordless_sudo_type=dynamic",
+        "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
+      ],
+      "ansible_env_vars": [
+         "http_proxy={{ user `http_proxy` }}",
+         "https_proxy={{ user `https_proxy` }}",
+         "no_proxy={{ user `no_proxy` }}"
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "roles/cis-role/playbook.yml",
+      "extra_arguments": [
+        "--extra-vars=@ansible-management/group_vars/all.yml",
+        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml"
+      ],
+      "ansible_env_vars": [
+         "http_proxy={{ user `http_proxy` }}",
+         "https_proxy={{ user `https_proxy` }}",
+         "no_proxy={{ user `no_proxy` }}"
+      ],
+      "host_alias": "{{ user `temp_host_name` }}"
     },
     {
       "type": "shell",
@@ -80,13 +116,27 @@
     },
     {
       "type": "shell",
-      "inline": ["echo 'Bootstrap finished, running update.'",
-		"sudo yum update -y",
+      "inline": ["echo 'Bootstrap finished, running update'",
+		"sudo yum update -y -q"
+	]
+
+    },
+    {
+      "type": "file",
+      "source": "tests",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "script": "scripts/serverspec.sh"
+    },
+    {
+      "type": "shell",
+      "inline": [
 		"echo 'Applying waagent deprovision with workaround to preserve resolv.conf'",
 		"cp /etc/resolv.conf /tmp/resolv.conf",
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
-	]
-
+      ]
     }
   ]
 }
