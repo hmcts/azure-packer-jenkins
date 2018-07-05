@@ -56,9 +56,11 @@
       shell: yum -y --enablerepo=='*' install yarn maven jq owasp-zap
       register: debug5
       failed_when: false
+      when: False
     - name: Show what happened with the attempt to install packages via yum
       debug: var=debug5
       failed_when: false
+      when: False
 
     - name: Get list of gpg keys used by rpm (after yum install)
       shell: ls -lh /etc/pki/rpm-gpg/*
