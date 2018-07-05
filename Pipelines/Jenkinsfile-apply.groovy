@@ -31,7 +31,7 @@ node {
             git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
           }
           dir('ansible-management') {
-            git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
+            git url: "https://github.com/hmcts/ansible-management", branch: "RDO-2239-01", credentialsId: "jenkins-public-github-api-token"
           }
 
           dir('roles/cis-role') {
