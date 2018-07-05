@@ -71,20 +71,6 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "playbook-debug.yml",
-      "host_alias": "{{ user `temp_host_name` }}",
-      "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
-        "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
-        "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
-        "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
-        "--extra-vars", "passwordless_sudo_type=dynamic",
-        "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
-      ]
-    },
-    {
-      "type": "ansible",
       "playbook_file": "roles/jenkins-common-role/playbook.yml",
       "extra_arguments": [
         "--extra-vars=@ansible-management/group_vars/all.yml",
