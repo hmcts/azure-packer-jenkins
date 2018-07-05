@@ -42,6 +42,7 @@
     - name: Disable GPG keys on cabelo repos as key is currently broken
       shell: sed -i -e 's!gpgcheck = 1!gpgcheck = 0!g' /etc/yum.repos.d/cabelo.repo
       failed_when: false
+      when: False
 
     - name: Get yum cabelo depository information
       shell: cat /etc/yum.repos.d/cabelo.repo
