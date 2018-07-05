@@ -39,18 +39,30 @@
       debug: var=debug3
       failed_when: false
 
-    - name: Attempt to install yarn manually for debugging
-      shell: yum -y --enablerepo=='*' install yarn maven jq owasp-zap
+    - name: Disable GPG keys on cabelo repos as key is currently broken
+      shell: sed -i -e 's!gpgcheck = 1!gpgcheck = 0!g' /etc/yum.repos.d/cabelo.repo
+      failed_when: false
+
+    - name: Get yum cabelo depository information
+      shell: cat /etc/yum.repos.d/cabelo.repo
       register: debug4
       failed_when: false
-    - name: Show what happened with the attempt to install packages via yum
+    - name: Show yum cabelo depository information
       debug: var=debug4
+      failed_when: false
+
+    - name: Attempt to install yarn manually for debugging
+      shell: yum -y --enablerepo=='*' install yarn maven jq owasp-zap
+      register: debug5
+      failed_when: false
+    - name: Show what happened with the attempt to install packages via yum
+      debug: var=debug5
       failed_when: false
 
     - name: Get list of gpg keys used by rpm (after yum install)
       shell: ls -lh /etc/pki/rpm-gpg/*
-      register: debug5
+      register: debug6
       failed_when: false
     - name: Show list of gpg keys
-      debug: var=debug5
+      debug: var=debug6
       failed_when: false
