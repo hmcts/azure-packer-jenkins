@@ -23,43 +23,54 @@ node {
       wrap([$class: 'AnsiColorBuildWrapper', colorMapName: 'xterm']) {
 
         stage('Checkout') {
-          checkout scm
-          dir('roles/bootstrap-role') {
-            git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
-          }
-          dir('roles/jenkins-common-role') {
-            git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
+          deleteDir()
+          dir('azure-packer-jenkins') {
+            git url: "https://github.com/hmcts/azure-packer-jenkins", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
           dir('ansible-management') {
             git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
-
-          dir('roles/cis-role') {
+          dir('ansible-management/roles/bootstrap-role') {
+            git url: "https://github.com/hmcts/bootstrap-role", branch: "master"
+          }
+          dir('ansible-management/roles/jenkins-common-role') {
+            git url: "https://github.com/hmcts/jenkins-common-role", branch: "master"
+          }
+          dir('ansible-management/roles/cis-role') {
             git url: "https://github.com/hmcts/cis-role.git", branch: "master", credentialsId: "jenkins-public-github-api-token"
           }
         }
 
-	stage('Create symlinks to work around relative-directory-playbook-path bug') {
-		sh '''
-		ln -s `pwd`/roles `pwd`/roles/bootstrap-role/roles
-		ln -s `pwd`/roles `pwd`/roles/jenkins-common-role/roles
-		ln -s `pwd`/roles `pwd`/roles/cis-role/roles
-		ln -s `pwd`/roles/cis-role `pwd`/roles/cis
-		'''
-	}
+    	stage('Put files in appropriate locations') {
+    		sh '''
+            rsync -a --exclude='.git' $(pwd)/azure-packer-jenkins/ $(pwd)/ansible-management/ $(pwd)/workdir/
+            rm -rf $(pwd)/azure-packer-jenkins $(pwd)/ansible-management
+            cp -a $(pwd)/workdir/roles/bootstrap-role/run_bootstrap_dynjenkins.yml $(pwd)/workdir/run_bootstrap_dynjenkins.yml
+    		'''
+    	}
 
         stage('Bootstrap Role Installation/Download') {
           sh '''
-            ansible-galaxy install -r roles/bootstrap-role/requirements.yml --force --roles-path=roles/
+            ansible-galaxy install --ignore-errors -r workdir/roles/bootstrap-role/requirements.yml --force --roles-path=workdir/roles/
           '''
         }
 
         stage('Jenkins Common/Slave Roles Installation/Download') {
           sh '''
-            ansible-galaxy install -r roles/jenkins-common-role/requirements.yml --force --roles-path=roles/
-            cp ansible-management/files/*.rpm roles/devops.common/files/
+            ansible-galaxy install --ignore-errors -r workdir/roles/jenkins-common-role/requirements.yml --force --roles-path=workdir/roles/
+            cp workdir/files/*.rpm workdir/roles/devops.common/files/
           '''
         }
+
+        stage('Workaround for roles which have multiple names') {
+          sh '''
+            cp -a $(pwd)/workdir/roles/repos-role $(pwd)/workdir/roles/devops.repos
+          '''
+        }
+
+    	stage('Show contents of the workspace') {
+    		sh ('find . -type f')
+    	}
 
         stage('Packer Version') {
           sh '''
@@ -69,7 +80,7 @@ node {
 
         stage('Verify Syntax') {
           sh '''
-            packer validate -var "azure_client_id=ug" -var "azure_client_secret=ogg" -var "azure_subscription_id=laurel" -var "azure_resource_group_name=adam" -var "azure_storage_account_name=eve" -var "jenkins_user_password=secret" azure-jenkinsagent-gold.json
+            cd workdir && TMPDIR=$(pwd) packer validate -var "azure_client_id=ug" -var "azure_client_secret=ogg" -var "azure_subscription_id=laurel" -var "azure_resource_group_name=adam" -var "azure_storage_account_name=eve" -var "jenkins_user_password=secret" azure-jenkinsagent-gold.json
           '''
         }
 
@@ -127,9 +138,7 @@ node {
               wrap([$class: 'VaultBuildWrapper', vaultSecrets: secrets]) {
 
                 sh '''
-                  pwd
-                  find . -type f
-                  packer build -var-file=ansible-management/packer_vars/azure-packer-jenkins.json -var "azure_subscription_id=$(az account show | jq -r .id)" -var "azure_resource_group_name=jabrg$Subscription" -var "azure_storage_account_name=jabsa$(az account show | jq -r .name | tr [:upper:] [:lower:] | sed s#-##g)" -var "jenkins_user_password=$JENKINS_USER_PASSWORD" azure-jenkinsagent-gold.json
+                  cd workdir && TMPDIR=$(pwd) packer build -var-file=packer_vars/azure-packer-jenkins.json -var "azure_subscription_id=$(az account show | jq -r .id)" -var "azure_resource_group_name=jabrg$Subscription" -var "azure_storage_account_name=jabsa$(az account show | jq -r .name | tr [:upper:] [:lower:] | sed s#-##g)" -var "jenkins_user_password=$JENKINS_USER_PASSWORD" azure-jenkinsagent-gold.json
                 '''
               }
             }
