@@ -49,14 +49,14 @@
   [
     {
       "type": "ansible",
-      "playbook_file": "roles/bootstrap-role/run_bootstrap_dynjenkins.yml",
+      "playbook_file": "{{pwd}}/run_bootstrap_dynjenkins.yml",
+      "groups": ["role_buildagent"],
       "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars=passwordless_sudo_type=dynamic",
         "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
       ],
       "ansible_env_vars": [
+         "ANSIBLE_ROLES_PATH={{pwd}}/roles",
          "http_proxy={{ user `http_proxy` }}",
          "https_proxy={{ user `https_proxy` }}",
          "no_proxy={{ user `no_proxy` }}"
@@ -71,10 +71,9 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "roles/jenkins-common-role/playbook.yml",
+      "playbook_file": "{{pwd}}/roles/jenkins-common-role/playbook.yml",
+      "groups": ["role_buildagent"],
       "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml",
         "--extra-vars", "dev_jenkins_azure_cli_role_creds_user={{ user `override_ansible_jenkins_run_user` }}",
         "--extra-vars", "{docker_allow_users: [ {{ user `override_ansible_docker_allow_users` }} ]}",
         "--extra-vars", "vault_token_role_user={{ user `override_ansible_jenkins_run_user` }}",
@@ -82,6 +81,7 @@
         "--extra-vars", "jenkins_common_role_override_username={{ user `jenkins_common_role_override_username` }}"
       ],
       "ansible_env_vars": [
+         "ANSIBLE_ROLES_PATH={{pwd}}/roles",
          "http_proxy={{ user `http_proxy` }}",
          "https_proxy={{ user `https_proxy` }}",
          "no_proxy={{ user `no_proxy` }}"
@@ -90,12 +90,10 @@
     },
     {
       "type": "ansible",
-      "playbook_file": "roles/cis-role/playbook.yml",
-      "extra_arguments": [
-        "--extra-vars=@ansible-management/group_vars/all.yml",
-        "--extra-vars=@ansible-management/group_vars/role_buildagent.yml"
-      ],
+      "playbook_file": "{{pwd}}/roles/cis-role/playbook.yml",
+      "groups": ["role_buildagent"],
       "ansible_env_vars": [
+         "ANSIBLE_ROLES_PATH={{pwd}}/roles",
          "http_proxy={{ user `http_proxy` }}",
          "https_proxy={{ user `https_proxy` }}",
          "no_proxy={{ user `no_proxy` }}"
