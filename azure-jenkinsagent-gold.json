@@ -135,6 +135,13 @@
 		"cp /etc/resolv.conf /tmp/resolv.conf",
 		"sudo /usr/sbin/waagent -force -deprovision && sudo mv /tmp/resolv.conf /etc/resolv.conf && sudo userdel -f -r packer && export HISTSIZE=0 && sync"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+		"echo 'Removing old versions of Java if required'",
+		"rpm -qa | grep java-1.7.0-openjdk && yum remove -y java-1.7.0-openjdk || echo Ignored"
+      ]
     }
   ]
 }

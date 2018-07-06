@@ -25,7 +25,7 @@ node {
         stage('Checkout') {
           deleteDir()
           dir('azure-packer-jenkins') {
-            git url: "https://github.com/hmcts/azure-packer-jenkins", branch: "master", credentialsId: "jenkins-public-github-api-token"
+            git url: "https://github.com/hmcts/azure-packer-jenkins", branch: "autobuild", credentialsId: "jenkins-public-github-api-token"
           }
           dir('ansible-management') {
             git url: "https://github.com/hmcts/ansible-management", branch: "master", credentialsId: "jenkins-public-github-api-token"
@@ -59,12 +59,6 @@ node {
           sh '''
             ansible-galaxy install --ignore-errors -r workdir/roles/jenkins-common-role/requirements.yml --force --roles-path=workdir/roles/
             cp workdir/files/*.rpm workdir/roles/devops.common/files/
-          '''
-        }
-
-        stage('Workaround for roles which have multiple names') {
-          sh '''
-            cp -a $(pwd)/workdir/roles/repos-role $(pwd)/workdir/roles/devops.repos
           '''
         }
 
@@ -143,6 +137,14 @@ node {
               }
             }
           }
+
+        stage('Show information about Java') {
+          sh '''
+            rpm -qa | grep -i java-1 | sort
+            java -version
+          '''
+        }
+
         }
       }
 
