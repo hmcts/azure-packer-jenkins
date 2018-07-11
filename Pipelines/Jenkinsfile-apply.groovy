@@ -62,12 +62,6 @@ node {
           '''
         }
 
-        stage('Workaround for roles which have multiple names') {
-          sh '''
-            cp -a $(pwd)/workdir/roles/repos-role $(pwd)/workdir/roles/devops.repos
-          '''
-        }
-
     	stage('Show contents of the workspace') {
     		sh ('find . -type f')
     	}
